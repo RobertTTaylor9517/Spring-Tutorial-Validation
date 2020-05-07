@@ -5,10 +5,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.validation.Valid;
+
 import com.javapractice.validationdemo.dao.UserDAO;
 import com.javapractice.validationdemo.entities.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,15 +49,23 @@ public class UserController {
     }
 
     @PostMapping
-    public User addUser(@RequestBody User newUser){
+    public Object addUser(@Valid @RequestBody User newUser, BindingResult result){
+        if(result.hasErrors()){
+            return result.getAllErrors();
+        }
+
         User user = userDAO.save(newUser);
 
         return user;
     }
     
     @PutMapping
-    public User updateUser(@RequestBody User newUser){
+    public Object updateUser(@Valid @RequestBody User newUser, BindingResult result){
         User user = userDAO.getOne(newUser.getId());
+
+        if(result.hasErrors()){
+            return result.getAllErrors();
+        }
 
         user = newUser;
 
